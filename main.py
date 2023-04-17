@@ -39,15 +39,16 @@ async def check_captcha(message):
     pt = datetime.datetime.strptime(now,'%H:%M:%S,%f')
 
 
-    user_data[message.from_user.username]['from_start'] = (pt.second + pt.minute*60 + pt.hour*3600) - user_data[message.from_user.username]['last_check']
-    user_data[message.from_user.username]['last_check'] = user_data[message.from_user.username]['from_start']
+    from_start = (pt.second + pt.minute*60 + pt.hour*3600) - user_data[message.from_user.username]['last_check']
+    user_data[message.from_user.username]['last_check'] = from_start
+    print(f'\nnow: {from_start}\nlast_check: {user_data[message.from_user.username]["last_check"]}\n')
     for x, y in user_data.items():
         if y['captchaend'] == False:
-            if user_data[message.from_user.username]['from_start'] >= time2:
+            if from_start >= time2:
                 await bot.send_message(y['id'], 'Пожалуйста, пройдите проверку на бота, нажмите кнопку "Я человек"')
                 await bot.send_message(y['id'], 'Иначе нам придется удалить вас из телеграм канала агентства недвижимости WellDom')
                 y['captchaend'] = None
-            elif user_data[message.from_user.username]['from_start'] >= time2 and user_data[message.from_user.username]['from_start'] < time3:
+            elif from_start >= time2 and from_start < time3:
                 await bot.send_message(y['id'], 'Пожалуйста, пройдите проверку на бота, нажмите кнопку "Я человек"')
         elif y['captchaend'] == None:
             await bot.send_message(y['id'], 'ban')
